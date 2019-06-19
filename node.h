@@ -7,10 +7,21 @@ class Matrix;
 template <typename T>
 class Node {
 protected:
-    Node<T> *next, *down;
+    Node<T> *next = nullptr;
+    Node<T> *down = nullptr;
+    unsigned row,column;
+    T value;
 
 public:
-    explicit Node();
+    Node() = default;
+    
+    Node(unsigned rp, unsigned cp, T v){
+    	this->row = rp;
+    	this->column = cp;
+    	this->value = v;
+    }
+
+    ~Node(){}
 
     friend class Matrix<T>;
 };
