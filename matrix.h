@@ -11,7 +11,7 @@ using namespace std;
 template <typename T>
 class Matrix {
 private:
-    Node<T> *root;
+    Node<T>* root;
     unsigned rows, columns;
 
 public:
@@ -54,7 +54,7 @@ public:
 
         aux = &((*aux)->next);
         
-        while((*aux)->column < c){
+        while(*aux && (*aux)->column < c){
             aux = &((*aux)->next);
         }
 
@@ -81,7 +81,7 @@ public:
         }
 
         aux = &((*aux)->down);
-        while((*aux)->row < c){
+        while(*aux && (*aux)->row < c){
             aux = &((*aux)->down);
         }
 
@@ -101,11 +101,12 @@ public:
             throw "La matriz no es tan grande :c";
         }
         Node<T>* aux = root;
-        for(int i = 0; i<=r;i++){
+        aux = aux->down;
+        for(int i = 0; i<r;i++){
             aux = aux->down;
         }
         aux = aux->next;
-        for(int i = 0; i<c;i++){
+        while(aux && aux->column < c){
             aux = aux->next;
         }
         if(!aux || aux->column > c){
@@ -118,17 +119,32 @@ public:
         Matrix<T> M2(rows,columns);
 
         Node<T>* i = root->next;
+        Node<T>* d = i->down;
         while(i != nullptr){
-            Node<T>* d = i->down;
+            d = i->down;
             while(d != nullptr){
                 M2.set(d->row,d->column,d->value * scalar); 
                 d = d->down;
-            } 
+            }
+            i = i->next;
         }
         return M2;
     }
     Matrix<T> operator*(Matrix<T> M2) const{
-
+        Matrix<T> M3(rows, M2.columns);
+        T accum = 0;
+        for(int i = 0;i<rows;i++){
+            for(int j = 0;j<M2.columns;j++){
+                accum = 0;
+                for(int k =0;k<columns;k++){
+                    T a =(*this)(i,k);
+                    T b =M2(k,j);
+                    accum += a*b;
+                }
+                M3.set(i,j,accum);
+            }
+        }
+        return M3;
     }
     Matrix<T> operator+(Matrix<T> M2) const{
         Matrix M3(rows,columns);
